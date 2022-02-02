@@ -91,9 +91,10 @@ ui <- fluidPage(
 
           tabPanel("Impact analysis",
                     br(),
-                    p("Comparisons of number of cases or incidence rates
-                       per 100,000 persons for selected vaccination scenario.
-                      Using data from selected country and condition."),
+                    p("Comparison of vaccination scenario to pre-vaccination assumptions
+                      using demographic data of selected country and country-dependent
+                      incidence data where availble. Plots show (absolute or averted)
+                      number of cases, DALYs and deaths (where relevant)."),
                     br(),
 
 
@@ -122,20 +123,24 @@ ui <- fluidPage(
 
                     plotOutput("impactPlot")),
 
-         tabPanel("Age-specific parameters",
+         tabPanel("Incidence data",
                     br(),
-                    p("Incidents, deaths and DALYs (numbers or rates per 100,000
-                       persons) for selected country and condition. Error bars show
-                      95% confidence intervals. Data is from Global Health Data Exchange (2019)"),
+                    p("Assumed constant age-specific incidence for selected country
+                       and condition is based on below number of cases. Cellulitis
+                       (adjusted by proportion attributable) and rheumatic heart disease
+                       data is from Global Health Data Exchange (2019) with
+                       error bars showing 95% confidence intervals. For further
+                      description of source data and methods see", strong("About")),
                     br(),
 
                     downloadButton("saveCurrentPlot", "Save plot"),
 
                     plotOutput("currentPlot")),
 
-         tabPanel("Help"),
-
-         tabPanel("About"))
+         tabPanel("About",
+                  br(),
+                  p("Brief description plus (hopefully) a link to paper"),
+                  br()))
 
       ) #end mainPanel
 
@@ -164,14 +169,15 @@ currentPlot <- eventReactive(c(input$submitButton1, input$outputChoice2), {
   if(condition == "Cellulitis" || condition == "Rheumatic Heart Disease")
   {
     incR <- getConditionData(country, condition, "Number", propA)[[1]]
-    deaths <- getConditionData(country, condition, "Number", propA)[[2]]
-    dalys <- getConditionData(country, condition, "Number", propA)[[3]]
+    #deaths <- getConditionData(country, condition, "Number", propA)[[2]]
+    #dalys <- getConditionData(country, condition, "Number", propA)[[3]]
 
-    p1 <- makeBarPlot(incR, ylabel = "Number of cases", colFill = "steelblue")
-    p2 <- makeBarPlot(deaths, ylabel = "Deaths", colFill = "steelblue")
-    p3 <- makeBarPlot(dalys, ylabel = "DALYs", colFill = "steelblue")
+    #p1 <- makeBarPlot(incR, ylabel = "Number of cases", colFill = "steelblue")
+    #p2 <- makeBarPlot(deaths, ylabel = "Deaths", colFill = "steelblue")
+    #p3 <- makeBarPlot(dalys, ylabel = "DALYs", colFill = "steelblue")
 
-    ggarrange(p1, p2, p3, ncol = 1, nrow = 3)
+    #ggarrange(p1, p2, p3, ncol = 1, nrow = 3)
+    makeBarPlot(incR, ylabel = "Number of cases", colFill = "steelblue")
 
   }else{
     incR <- getConditionData(country, condition, "Rate", propA)
@@ -201,7 +207,7 @@ impactData <- eventReactive(input$submitButton1, {
     country <- isolate(input$country)
     condition <- isolate(input$condition)
     impType <- input$impactChoice
-    yearV <- isolate(input$yearV)
+    yearV <- as.numeric(isolate(input$yearV))
     ageV <- isolate(input$ageV)
     duration <- isolate(input$duration)
     waning <- isolate(input$waning)
@@ -272,7 +278,7 @@ impactPlot <- reactive({
   plotYears <- isolate(as.numeric(input$plotYears))
 
   country <- isolate(input$country)
-  yearV <- isolate(input$yearV)
+  yearV <- as.numeric(isolate(input$yearV))
   ageV <- isolate(input$ageV)
   duration <- isolate(input$duration)
   condition <-isolate(input$condition)
@@ -357,7 +363,7 @@ output$impactPlot <- renderPlot({
 output$saveImpactTable <- downloadHandler(
   filename = function() {
     country <- isolate(input$country)
-    yearV <- isolate(input$yearV)
+    yearV <- as.numeric(isolate(input$yearV))
     ageV <- isolate(input$ageV)
     duration <- isolate(input$duration)
     condition <-isolate(input$condition)
@@ -419,7 +425,7 @@ output$saveImpactTable <- downloadHandler(
 output$saveImpactPlot <- downloadHandler(
   filename = function() {
     country <- isolate(input$country)
-    yearV <- isolate(input$yearV)
+    yearV <- as.numeric(isolate(input$yearV))
     ageV <- isolate(input$ageV)
     duration <- isolate(input$duration)
     condition <-isolate(input$condition)
