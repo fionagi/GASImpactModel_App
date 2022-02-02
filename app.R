@@ -6,15 +6,21 @@
 #
 #    http://shiny.rstudio.com/
 
+if (!require("shiny")) install.packages("shiny")
+if (!require("shinyWidgets")) install.packages("shinyWidgets")
+if (!require("ggpubr")) install.packages("ggpubr")
+if (!require("devtools")) install.packages(shiny)
+if (!require("GASImpactModel")) devtools::install_github("fionagi/GASImpactModel")
+if (!require("xlsx")) install.packages("xlsx")
+if (!require("stringr")) install.packages("stringr")
+
 library(shiny)
 library(shinyWidgets)
 library(ggpubr)
 library(devtools)
-devtools::install_github("fionagi/GASImpactModel")
 library(GASImpactModel)
 library(xlsx)
 library(stringr)
-
 
 ##################################################################################################
 #User interface code
