@@ -9,8 +9,9 @@
 library(shiny)
 library(shinyWidgets)
 library(ggpubr)
-library(githubinstall)
-githubinstall::githubinstall(GASImpactModel)
+library(devtools)
+devtools::install_github("fionagi/GASImpactModel")
+library(GASImpactModel)
 library(xlsx)
 library(stringr)
 
@@ -149,16 +150,16 @@ currentPlot <- eventReactive(c(input$submitButton1, input$outputChoice2), {
 
   country <- isolate(input$country)
   condition <- isolate(input$condition)
-  prop <- 1 #proportion of incidents attributable to Strep A
+  propA <- 1 #proportion of incidents attributable to Strep A
 
-  if(condition == "Impetigo") prop <- isolate(input$propAttrI)
-  if(condition == "Cellulitis") prop <- isolate(input$propAttrC)
+  if(condition == "Impetigo") propA <- isolate(input$propAttrI)
+  if(condition == "Cellulitis") propA <- isolate(input$propAttrC)
 
   if(condition == "Cellulitis" || condition == "Rheumatic Heart Disease")
   {
-    incR <- getConditionData(country, condition, "Number", prop)[[1]]
-    deaths <- getConditionData(country, condition, "Number", prop)[[2]]
-    dalys <- getConditionData(country, condition, "Number", prop)[[3]]
+    incR <- getConditionData(country, condition, "Number", propA)[[1]]
+    deaths <- getConditionData(country, condition, "Number", propA)[[2]]
+    dalys <- getConditionData(country, condition, "Number", propA)[[3]]
 
     p1 <- makeBarPlot(incR, ylabel = "Number of cases", colFill = "steelblue")
     p2 <- makeBarPlot(deaths, ylabel = "Deaths", colFill = "steelblue")
@@ -167,7 +168,7 @@ currentPlot <- eventReactive(c(input$submitButton1, input$outputChoice2), {
     ggarrange(p1, p2, p3, ncol = 1, nrow = 3)
 
   }else{
-    incR <- getConditionData(country, condition, "Rate", prop)
+    incR <- getConditionData(country, condition, "Rate", propA)
     incR_per100 <- incR
     incR_per100[,"val"] <- 100*incR_per100[,"val"]
     makeBarPlot(incR_per100, ylabel = "Number of cases per 100 persons", colFill = "steelblue")
@@ -202,19 +203,20 @@ impactData <- eventReactive(input$submitButton1, {
     ramp <- isolate(input$ramp)
     efficacy <- isolate(input$efficacy)
     overallEff <- (efficacy*coverage)/100 #as a percentage
-    prop <- 1 #proportion of incidents attributable to Strep A
+    propA <- 1 #proportion of incidents attributable to Strep A
 
-    if(condition == "Impetigo") prop <- isolate(input$propAttrI)
-    if(condition == "Cellulitis") prop <- isolate(input$propAttrC)
+    if(condition == "Impetigo") propA <- isolate(input$propAttrI)
+    if(condition == "Cellulitis") propA <- isolate(input$propAttrC)
 
     impType <- isolate(input$impactChoice)
     plotYears <- isolate(as.numeric(input$plotYears))
 
     if(condition == "Cellulitis" || condition == "Rheumatic Heart Disease"){
-      incR <- getConditionData(country, condition, "Rate", prop)[[1]]
+      incR <- getConditionData(location = country, condition = condition,
+                               metric = "Rate", prop = propA)[[1]]
       rate <- 100000
     }else{
-      incR <- getConditionData(country, condition, "Rate", prop)
+      incR <- getConditionData(country, condition, "Rate", propA)
       rate <- 1
     }
 
