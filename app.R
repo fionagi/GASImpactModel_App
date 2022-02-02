@@ -9,7 +9,8 @@
 library(shiny)
 library(shinyWidgets)
 library(ggpubr)
-library(GASImpactModel)
+library(githubinstall)
+githubinstall::githubinstall(GASImpactModel)
 library(xlsx)
 library(stringr)
 
