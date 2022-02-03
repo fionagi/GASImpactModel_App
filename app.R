@@ -221,7 +221,7 @@ impactData <- eventReactive(input$submitButton1, {
     if(condition == "Cellulitis") propA <- isolate(input$propAttrC)
 
     impType <- isolate(input$impactChoice)
-    plotYears <- isolate(as.numeric(input$plotYears))
+    plotYears <- isolate(as.numeric(input$plotYears))-1
 
     if(condition == "Cellulitis" || condition == "Rheumatic Heart Disease"){
       incR <- getConditionData(location = country, condition = condition,
@@ -275,7 +275,7 @@ impactPlot <- reactive({
   impModels <- impactData()
   impType <- input$impactChoice
   plotType <- input$plotChoice
-  plotYears <- isolate(as.numeric(input$plotYears))
+  plotYears <- isolate(as.numeric(input$plotYears))-1
 
   country <- isolate(input$country)
   yearV <- as.numeric(isolate(input$yearV))
